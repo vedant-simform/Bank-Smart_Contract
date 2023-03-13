@@ -8,7 +8,7 @@ contract SimformBank{
     event depositETH(address _to, uint _amount);
     event viewAccountBalance(address _accountName);
     event withdrawETH(address _from, uint _amount);
-    
+
     function deposit() payable public {
         customerAccountBalance[msg.sender] += msg.value;
         emit depositETH(msg.sender,msg.value);
@@ -20,7 +20,6 @@ contract SimformBank{
     }
 
     function withdraw(uint withdrawAmount) payable public {
-        withdrawAmount = withdrawAmount * 1e18;  // Changing input wei => ETH
         require(withdrawAmount<=customerAccountBalance[msg.sender],"Insufficient Balance");
         customerAccountBalance[msg.sender] -= withdrawAmount;
         payable(msg.sender).transfer(withdrawAmount);       
