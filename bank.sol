@@ -2,19 +2,30 @@
 pragma solidity ^0.8.0;
 
 contract SimformBank{
-    mapping(address=>uint) public customer;
-   
+    mapping(address=>uint) customerAccountBalance;
+    
+    // Events
+    event depositETH(address _to, uint _amount);
+    event viewAccountBalance(address _accountName);
+    event withdrawETH(address _from, uint _amount);
+
     function deposit() payable public {
-        customer[msg.sender] += msg.value;
+        customerAccountBalance[msg.sender] += msg.value;
+        emit depositETH(msg.sender,msg.value);
+        emit viewAccountBalance(msg.sender);
     }
 
     function checkBalance() public view returns(uint){
-        return customer[msg.sender];
+        return customerAccountBalance[msg.sender];
     }
 
     function withdraw(uint withdrawAmount) payable public {
-        require(withdrawAmount<=customer[msg.sender],"Insufficient Balance");
-        payable(msg.sender).transfer(withdrawAmount); 
-        customer[msg.sender] -= withdrawAmount;
+        withdrawAmount = withdrawAmount * (10**18);  // Changing input wei => ETH
+        require(withdrawAmount<=customerAccountBalance[msg.sender],"Insufficient Balance");
+        customerAccountBalance[msg.sender] -= withdrawAmount;
+        payable(msg.sender).transfer(withdrawAmount);       
+        emit depositETH(address(this), msg.value);
+        emit viewAccountBalance(msg.sender);  
     }
+    
 }
